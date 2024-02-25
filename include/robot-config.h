@@ -1,6 +1,6 @@
 #pragma once
-#include "vex.h"
 #include "core.h"
+#include "vex.h"
 
 extern vex::brain brain;
 extern vex::controller con;
@@ -10,13 +10,15 @@ extern vex::controller con;
 
 // Analog sensors
 
-
 // ================ OUTPUTS ================
 // Motors
 
 // Pneumatics
 
 // ================ SUBSYSTEMS ================
+
+extern OdometryTank odom;
+extern TankDrive drive_sys;
 
 // ================ UTILS ================
 
