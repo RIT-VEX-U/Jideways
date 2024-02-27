@@ -16,6 +16,7 @@ extern vex::controller con;
 // Pneumatics
 
 // ================ SUBSYSTEMS ================
+extern vex::motor_group intake_motors;
 
 extern OdometryTank odom;
 extern TankDrive drive_sys;
