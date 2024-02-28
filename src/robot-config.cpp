@@ -1,19 +1,19 @@
 #include "robot-config.h"
 #include "../core/include/subsystems/fun/video.h"
 #include <map>
+// Ports 10, 6 are bad
 
 vex::brain Brain;
 vex::controller con;
 
 // ================ INPUTS ================
 // Digital sensors
-vex::inertial imu(vex::PORT8);
+vex::inertial imu(vex::PORT1);
 
 // Analog sensors
 
 // ================ OUTPUTS ================
 // Motors
-
 vex::motor left_intake(vex::PORT2, vex::gearSetting::ratio18_1, false);
 vex::motor right_intake(vex::PORT9, vex::gearSetting::ratio18_1, true);
 
@@ -25,7 +25,7 @@ vex::motor left_bottom_middle(vex::PORT4, vex::gearSetting::ratio6_1, false);
 vex::motor left_bottom_back(vex::PORT11, vex::gearSetting::ratio6_1, true);
 
 vex::motor right_front_bottom(vex::PORT8, vex::gearSetting::ratio6_1, true);
-vex::motor right_back_top(vex::PORT10, vex::gearSetting::ratio6_1, false);
+vex::motor right_back_top(vex::PORT21, vex::gearSetting::ratio6_1, false);
 vex::motor right_bottom_middle(vex::PORT7, vex::gearSetting::ratio6_1, true);
 vex::motor right_bottom_back(vex::PORT20, vex::gearSetting::ratio6_1, false);
 
@@ -94,7 +94,6 @@ robot_specs_t robot_cfg = {
 };
 
 OdometryTank odom(left_motors, right_motors, robot_cfg, &imu);
-
 TankDrive drive_sys(left_motors, right_motors, robot_cfg, &odom);
 
 // ======== SUBSYSTEMS ========
