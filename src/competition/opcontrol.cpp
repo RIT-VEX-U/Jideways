@@ -11,15 +11,22 @@ const vex::controller::button &outtake_button = con.ButtonR2;
 
 const vex::controller::button &drive_mode_button = con.ButtonX;
 
+const vex::controller::button &left_wing_button = con.ButtonDown;
+const vex::controller::button &right_wing_button = con.ButtonB;
 /**
  * Main entrypoint for the driver control period
  */
 const double intake_volts = 10.0;
 void opcontrol() {
   // ================ INIT ================
+  // Wings
+  left_wing_button.pressed([]() { left_wing.set(!left_wing); });
+  right_wing_button.pressed([]() { right_wing.set(!right_wing); });
+
+  // Intake
   intake_button.pressed([]() { intake_motors.spin(vex::fwd, intake_volts, vex::volt); });
   outtake_button.pressed([]() { intake_motors.spin(vex::reverse, intake_volts, vex::volt); });
-
+  // Misc
   drive_mode_button.pressed([]() { tank = !tank; });
   con.ButtonLeft.pressed([]() { screen::prev_page(); });
   con.ButtonRight.pressed([]() { screen::next_page(); });

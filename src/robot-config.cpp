@@ -10,6 +10,9 @@ vex::controller con;
 // Digital sensors
 vex::inertial imu(vex::PORT1);
 
+vex::digital_out left_wing(Brain.ThreeWirePort.A);
+vex::digital_out right_wing(Brain.ThreeWirePort.B);
+
 // Analog sensors
 
 // ================ OUTPUTS ================

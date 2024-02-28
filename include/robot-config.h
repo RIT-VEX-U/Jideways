@@ -7,7 +7,8 @@ extern vex::controller con;
 
 // ================ INPUTS ================
 // Digital sensors
-
+extern vex::digital_out left_wing;
+extern vex::digital_out right_wing;
 // Analog sensors
 
 // ================ OUTPUTS ================
