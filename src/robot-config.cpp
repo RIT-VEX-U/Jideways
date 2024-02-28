@@ -60,6 +60,15 @@ PID::pid_config_t drive_pid = {
   .d = 0,
   .deadband = 1.0,
 };
+
+MotionController::m_profile_cfg_t drive_mc_cfg{
+  .max_v = 0,
+  .accel = 0,
+  .pid_cfg = drive_pid,
+  .ff_cfg = FeedForward::ff_config_t{},
+};
+MotionController drive_mc{drive_mc_cfg};
+
 PID::pid_config_t drive_correction_pid = {
   .p = 0,
   .i = 0,
@@ -79,7 +88,7 @@ robot_specs_t robot_cfg = {
   .dist_between_wheels = 12.0,
 
   .drive_correction_cutoff = 3.0,
-  .drive_feedback = new PID(drive_pid),
+  .drive_feedback = &drive_mc,
   .turn_feedback = new PID(turn_pid),
   .correction_pid = drive_correction_pid,
 };
