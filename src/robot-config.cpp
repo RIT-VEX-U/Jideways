@@ -100,6 +100,12 @@ OdometryTank odom(left_motors, right_motors, robot_cfg, &imu);
 TankDrive drive_sys(left_motors, right_motors, robot_cfg, &odom);
 
 // ======== SUBSYSTEMS ========
+const double intake_volts = 10.0;
+void intake(double volts) { intake_motors.spin(vex::fwd, volts, vex::volt); };
+void intake() { intake_motors.spin(vex::fwd, intake_volts, vex::volt); };
+
+void outtake(double volts) { intake_motors.spin(vex::reverse, volts, vex::volt); };
+void outtake() { intake_motors.spin(vex::reverse, intake_volts, vex::volt); };
 
 // ================ UTILS ================
 

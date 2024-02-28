@@ -16,16 +16,21 @@ const vex::controller::button &right_wing_button = con.ButtonB;
 /**
  * Main entrypoint for the driver control period
  */
-const double intake_volts = 10.0;
+
+const double fold_out_time = 0.5;
 void opcontrol() {
+  vex::timer drop_timer;
+  outtake();
+
   // ================ INIT ================
   // Wings
   left_wing_button.pressed([]() { left_wing.set(!left_wing); });
   right_wing_button.pressed([]() { right_wing.set(!right_wing); });
 
   // Intake
-  intake_button.pressed([]() { intake_motors.spin(vex::fwd, intake_volts, vex::volt); });
-  outtake_button.pressed([]() { intake_motors.spin(vex::reverse, intake_volts, vex::volt); });
+  intake_button.pressed([]() { intake(intake_volts); });
+  outtake_button.pressed([]() { outtake(intake_volts); });
+
   // Misc
   drive_mode_button.pressed([]() { tank = !tank; });
   con.ButtonLeft.pressed([]() { screen::prev_page(); });
@@ -34,7 +39,7 @@ void opcontrol() {
   // ================ PERIODIC ================
   while (true) {
     // intake motors
-    if (!intake_button.pressing() && !outtake_button.pressing()) {
+    if (!intake_button.pressing() && !outtake_button.pressing() && drop_timer.value() > fold_out_time) {
       intake_motors.stop(vex::brakeType::hold);
     }
 

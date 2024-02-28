@@ -22,6 +22,13 @@ extern vex::motor_group intake_motors;
 extern OdometryTank odom;
 extern TankDrive drive_sys;
 
+extern const double intake_volts;
+
+void intake(double volts);
+void intake();
+void outtake(double volts);
+void outtake();
+
 // ================ UTILS ================
 
 void robot_init();
