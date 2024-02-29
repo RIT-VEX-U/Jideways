@@ -58,17 +58,23 @@ std::map<std::string, vex::motor &> motor_names = {
 
 // ================ SUBSYSTEMS ================
 PID::pid_config_t drive_pid = {
-  .p = 0,
+  .p = 0.0,
   .i = 0,
   .d = 0,
   .deadband = 1.0,
 };
 
 MotionController::m_profile_cfg_t drive_mc_cfg{
-  .max_v = 0,
-  .accel = 0,
+  .max_v = 80,
+  .accel = 900,
   .pid_cfg = drive_pid,
-  .ff_cfg = FeedForward::ff_config_t{},
+  .ff_cfg =
+    FeedForward::ff_config_t{
+      .kS = 0.05,
+      .kV = 0.01,
+      .kA = 0.00005,
+      .kG = 0.0,
+    },
 };
 MotionController drive_mc{drive_mc_cfg};
 
@@ -85,10 +91,10 @@ PID::pid_config_t turn_pid = {
 };
 
 robot_specs_t robot_cfg = {
-  .robot_radius = 8.0,
-  .odom_wheel_diam = 2.0,
-  .odom_gear_ratio = 1,
-  .dist_between_wheels = 12.0,
+  .robot_radius = 8,
+  .odom_wheel_diam = 2.75,
+  .odom_gear_ratio = 4.0 / 3.0,
+  .dist_between_wheels = 10.5,
 
   .drive_correction_cutoff = 3.0,
   .drive_feedback = &drive_mc,
@@ -115,5 +121,8 @@ void outtake() { intake_motors.spin(vex::reverse, intake_volts, vex::volt); };
  */
 void robot_init() {
   set_video("cj2.mpeg");
-  screen::start_screen(Brain.Screen, {new VideoPlayer(), new screen::StatsPage(motor_names)});
+  screen::start_screen(
+    Brain.Screen,
+    {new VideoPlayer(), new screen::StatsPage(motor_names), new screen::OdometryPage(odom, 15.0, 15.0, true)}, 2
+  );
 }

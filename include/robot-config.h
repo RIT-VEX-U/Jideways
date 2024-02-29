@@ -21,6 +21,8 @@ extern vex::motor_group intake_motors;
 
 extern OdometryTank odom;
 extern TankDrive drive_sys;
+extern vex::motor_group left_motors;
+extern vex::motor_group right_motors;
 
 extern const double intake_volts;
 

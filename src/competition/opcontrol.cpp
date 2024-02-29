@@ -4,7 +4,8 @@
 #include <atomic>
 
 std::atomic<bool> tank{false};
-// std::atomic<TankDrive::BrakeType> brake_type = TankDrive::BrakeType::None;
+std::atomic<bool> do_drive{true};
+std::atomic<TankDrive::BrakeType> brake_type{TankDrive::BrakeType::None};
 
 const vex::controller::button &intake_button = con.ButtonR1;
 const vex::controller::button &outtake_button = con.ButtonR2;
@@ -17,10 +18,21 @@ const vex::controller::button &right_wing_button = con.ButtonB;
  * Main entrypoint for the driver control period
  */
 
-const double fold_out_time = 0.5;
+const double fold_out_time = 0.25;
 void opcontrol() {
   vex::timer drop_timer;
   outtake();
+
+  con.ButtonA.pressed([]() {
+    do_drive = false;
+    CommandController cc{
+      drive_sys.DriveForwardCmd(12),
+    };
+    left_motors.stop(vex::brakeType::hold);
+    right_motors.stop(vex::brakeType::hold);
+    cc.run();
+    do_drive = true;
+  });
 
   // ================ INIT ================
   // Wings
@@ -44,15 +56,17 @@ void opcontrol() {
     }
 
     // drive
-    if (tank) {
-      double left = (double)con.Axis3.position() / 100.0;
-      double right = (double)con.Axis2.position() / 100.0;
-      drive_sys.drive_tank(left, right);
-    } else {
-      double forward = (double)con.Axis3.position() / 100.0;
-      double turny = (double)con.Axis1.position() / 100.0;
+    if (do_drive) {
+      if (tank) {
+        double left = (double)con.Axis3.position() / 100.0;
+        double right = (double)con.Axis2.position() / 100.0;
+        drive_sys.drive_tank(left, right);
+      } else {
+        double forward = (double)con.Axis3.position() / 100.0;
+        double turny = (double)con.Axis1.position() / 100.0;
 
-      drive_sys.drive_arcade(forward, .75 * turny);
+        drive_sys.drive_arcade(forward, .75 * turny);
+      }
     }
     vexDelay(20);
   }

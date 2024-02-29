@@ -64,6 +64,7 @@ void start_screen(vex::brain::lcd &screen, std::vector<Page *> pages, int first_
   ScreenData *data = new ScreenData{pages, first_page, screen};
 
   screen_thread = new vex::thread(screen_thread_func, static_cast<void *>(data));
+  screen_thread->setPriority(vex::task::taskPrioritylow);
 }
 
 void stop_screen() { running = false; }
@@ -178,8 +179,9 @@ void StatsPage::update(bool was_pressed, int x, int y) {
   (void)y;
   (void)was_pressed;
 }
-void StatsPage::draw_motor_stats(const std::string &name, vex::motor &mot, unsigned int frame, int x, int y,
-                                 vex::brain::lcd &scr) {
+void StatsPage::draw_motor_stats(
+  const std::string &name, vex::motor &mot, unsigned int frame, int x, int y, vex::brain::lcd &scr
+) {
   const vex::color hot_col = vex::color(120, 0, 0);
   const vex::color med_col = vex::color(140, 100, 0);
   const vex::color ok_col = vex::black;
@@ -204,8 +206,9 @@ void StatsPage::draw_motor_stats(const std::string &name, vex::motor &mot, unsig
   scr.drawRectangle(x, y, row_width, row_height, col);
   scr.printAt(x + 2, y + 16, false, " %2d   %2.0fC   %.7s", port, temp, name.c_str());
 }
-void StatsPage::draw(vex::brain::lcd &scr, bool first_draw [[maybe_unused]],
-                     unsigned int frame_number [[maybe_unused]]) {
+void StatsPage::draw(
+  vex::brain::lcd &scr, bool first_draw [[maybe_unused]], unsigned int frame_number [[maybe_unused]]
+) {
   int num = 0;
   int x = 40;
   int y = y_start + row_height;
@@ -228,8 +231,10 @@ void StatsPage::draw(vex::brain::lcd &scr, bool first_draw [[maybe_unused]],
     num++;
   }
   vex::brain b;
-  scr.printAt(50, 220, "Battery: %2.1fv  %2.0fC %d%%", b.Battery.voltage(),
-              b.Battery.temperature(vex::temperatureUnits::celsius), b.Battery.capacity());
+  scr.printAt(
+    50, 220, "Battery: %2.1fv  %2.0fC %d%%", b.Battery.voltage(), b.Battery.temperature(vex::temperatureUnits::celsius),
+    b.Battery.capacity()
+  );
 }
 
 OdometryPage::OdometryPage(OdometryBase &odom, double width, double height, bool do_trail)
@@ -252,8 +257,9 @@ int in_to_px(double in) {
   return (int)(p * 240);
 }
 
-void OdometryPage::draw(vex::brain::lcd &scr, bool first_draw [[maybe_unused]],
-                        unsigned int frame_number [[maybe_unused]]) {
+void OdometryPage::draw(
+  vex::brain::lcd &scr, bool first_draw [[maybe_unused]], unsigned int frame_number [[maybe_unused]]
+) {
   pose_t pose = odom.get_position();
   path[path_index] = pose;
 
@@ -338,8 +344,9 @@ bool SliderWidget::update(bool was_pressed, int x, int y) {
   }
   return false;
 }
-void SliderWidget::draw(vex::brain::lcd &scr, bool first_draw [[maybe_unused]],
-                        unsigned int frame_number [[maybe_unused]]) {
+void SliderWidget::draw(
+  vex::brain::lcd &scr, bool first_draw [[maybe_unused]], unsigned int frame_number [[maybe_unused]]
+) {
   if (rect.height() <= 0) {
     printf("Slider: %s has no height. Cant use it.", name.c_str());
   }
@@ -380,8 +387,9 @@ bool ButtonWidget::update(bool was_pressed, int x, int y) {
   return false;
 }
 
-void ButtonWidget::draw(vex::brain::lcd &scr, bool first_draw [[maybe_unused]],
-                        unsigned int frame_number [[maybe_unused]]) {
+void ButtonWidget::draw(
+  vex::brain::lcd &scr, bool first_draw [[maybe_unused]], unsigned int frame_number [[maybe_unused]]
+) {
   scr.setPenColor(vex::white);
   scr.setPenWidth(1);
   scr.setFillColor(vex::color(50, 50, 50));
