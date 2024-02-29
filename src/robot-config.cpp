@@ -66,13 +66,13 @@ PID::pid_config_t drive_pid = {
 
 MotionController::m_profile_cfg_t drive_mc_cfg{
   .max_v = 80,
-  .accel = 900,
+  .accel = 500,
   .pid_cfg = drive_pid,
   .ff_cfg =
     FeedForward::ff_config_t{
       .kS = 0.05,
-      .kV = 0.01,
-      .kA = 0.00005,
+      .kV = 0.034,
+      .kA = 0.0026,
       .kG = 0.0,
     },
 };
