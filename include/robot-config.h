@@ -4,6 +4,7 @@
 
 extern vex::brain brain;
 extern vex::controller con;
+extern vex::inertial imu;
 
 // ================ INPUTS ================
 // Digital sensors

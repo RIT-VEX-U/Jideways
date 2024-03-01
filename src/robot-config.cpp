@@ -8,7 +8,7 @@ vex::controller con;
 
 // ================ INPUTS ================
 // Digital sensors
-vex::inertial imu(vex::PORT1);
+vex::inertial imu(vex::PORT13, vex::turnType::right);
 
 vex::digital_out left_wing(Brain.ThreeWirePort.A);
 vex::digital_out right_wing(Brain.ThreeWirePort.B);
@@ -32,8 +32,8 @@ vex::motor right_back_top(vex::PORT21, vex::gearSetting::ratio6_1, false);
 vex::motor right_bottom_middle(vex::PORT7, vex::gearSetting::ratio6_1, true);
 vex::motor right_bottom_back(vex::PORT20, vex::gearSetting::ratio6_1, false);
 
-vex::motor_group left_motors = {left_front_bottom, left_back_top, left_bottom_middle, left_bottom_back};
-vex::motor_group right_motors = {right_front_bottom, right_back_top, right_bottom_middle, right_bottom_back};
+vex::motor_group left_motors = {left_bottom_back, left_front_bottom, left_back_top, left_bottom_middle};
+vex::motor_group right_motors = {right_bottom_back, right_front_bottom, right_back_top, right_bottom_middle};
 
 vex::motor_group intake_motors{left_intake, right_intake};
 
@@ -57,48 +57,43 @@ std::map<std::string, vex::motor &> motor_names = {
 // clang-format on
 
 // ================ SUBSYSTEMS ================
-PID::pid_config_t drive_pid = {
+PID::pid_config_t drive_pid_cfg = {
+  .p = 0.5,
+  .i = 0,
+  .d = 0.018,
+  .deadband = 0.5,
+  .on_target_time = 0.5,
+};
+PID drive_pid{drive_pid_cfg};
+
+PID::pid_config_t drive_correction_pid = {
   .p = 0.0,
   .i = 0,
   .d = 0,
   .deadband = 1.0,
+
 };
 
-MotionController::m_profile_cfg_t drive_mc_cfg{
-  .max_v = 80,
-  .accel = 900,
-  .pid_cfg = drive_pid,
-  .ff_cfg =
-    FeedForward::ff_config_t{
-      .kS = 0.05,
-      .kV = 0.01,
-      .kA = 0.00005,
-      .kG = 0.0,
-    },
-};
-MotionController drive_mc{drive_mc_cfg};
-
-PID::pid_config_t drive_correction_pid = {
+PID::pid_config_t turn_pid_cfg = {
   .p = 0,
   .i = 0,
   .d = 0,
-  .deadband = 1.0,
+  .deadband = 0.0,
+  .on_target_time = 0.5,
+  .error_method = PID::ERROR_TYPE::ANGULAR,
 };
 
-PID::pid_config_t turn_pid = {
-  .p = 0, .i = 0, .d = 0, .deadband = 1.0,
-  // .error_method =
-};
+PID turn_pid{turn_pid_cfg};
 
 robot_specs_t robot_cfg = {
   .robot_radius = 8,
   .odom_wheel_diam = 2.75,
-  .odom_gear_ratio = 4.0 / 3.0,
+  .odom_gear_ratio = 4.38 / 3.0,
   .dist_between_wheels = 10.5,
 
   .drive_correction_cutoff = 3.0,
-  .drive_feedback = &drive_mc,
-  .turn_feedback = new PID(turn_pid),
+  .drive_feedback = &drive_pid,
+  .turn_feedback = &turn_pid,
   .correction_pid = drive_correction_pid,
 };
 
@@ -120,9 +115,12 @@ void outtake() { intake_motors.spin(vex::reverse, intake_volts, vex::volt); };
  * are started.
  */
 void robot_init() {
+  imu.startCalibration();
   set_video("cj2.mpeg");
   screen::start_screen(
     Brain.Screen,
-    {new VideoPlayer(), new screen::StatsPage(motor_names), new screen::OdometryPage(odom, 15.0, 15.0, true)}, 2
+    {new VideoPlayer(), new screen::StatsPage(motor_names), new screen::OdometryPage(odom, 15.0, 15.0, true),
+     new screen::PIDPage(turn_pid, "turn_pid")},
+    2
   );
 }

@@ -20,16 +20,26 @@ const vex::controller::button &right_wing_button = con.ButtonB;
 
 const double fold_out_time = 0.25;
 void opcontrol() {
+  while (imu.isCalibrating()) {
+    vexDelay(1);
+  }
   vex::timer drop_timer;
   outtake();
-
+  con.ButtonY.pressed([]() {
+    if (brake_type == TankDrive::BrakeType::None) {
+      brake_type = TankDrive::BrakeType::Smart;
+    } else {
+      brake_type = TankDrive::BrakeType::None;
+    }
+  });
+  con.ButtonUp.pressed([]() { odom.set_position({0, 0, 90}); });
   con.ButtonA.pressed([]() {
     do_drive = false;
     CommandController cc{
-      drive_sys.DriveForwardCmd(12),
+      drive_sys.TurnDegreesCmd(-90),
     };
-    left_motors.stop(vex::brakeType::hold);
-    right_motors.stop(vex::brakeType::hold);
+    // left_motors.stop(vex::brakeType::hold);
+    // right_motors.stop(vex::brakeType::hold);
     cc.run();
     do_drive = true;
   });
@@ -60,12 +70,12 @@ void opcontrol() {
       if (tank) {
         double left = (double)con.Axis3.position() / 100.0;
         double right = (double)con.Axis2.position() / 100.0;
-        drive_sys.drive_tank(left, right);
+        drive_sys.drive_tank(left, right, 1, brake_type);
       } else {
         double forward = (double)con.Axis3.position() / 100.0;
         double turny = (double)con.Axis1.position() / 100.0;
 
-        drive_sys.drive_arcade(forward, .75 * turny);
+        drive_sys.drive_arcade(forward, .75 * turny, 1, brake_type);
       }
     }
     vexDelay(20);
