@@ -59,16 +59,16 @@ std::map<std::string, vex::motor &> motor_names = {
 
 // ================ SUBSYSTEMS ================
 PID::pid_config_t drive_pid_cfg = {
-  .p = 0.5,
+  .p = 0.2,
   .i = 0,
-  .d = 0.018,
-  .deadband = 0.5,
+  .d = 0.005,
+  .deadband = 1.0,
   .on_target_time = 0.25,
 };
 PID drive_pid{drive_pid_cfg};
 
 PID::pid_config_t drive_correction_pid = {
-  .p = 0.005,
+  .p = 0.05,
   .i = 0,
   .d = 0,
   .deadband = 0.1,
@@ -78,7 +78,7 @@ PID::pid_config_t turn_pid_cfg = {
   .p = 0.0365,
   .i = 0,
   .d = 0.0015,
-  .deadband = 1.0,
+  .deadband = 2.0,
   .on_target_time = 0.25,
 };
 
@@ -90,7 +90,7 @@ robot_specs_t robot_cfg = {
   .odom_gear_ratio = 4.38 / 3.0,
   .dist_between_wheels = 10.5,
 
-  .drive_correction_cutoff = 3.0,
+  .drive_correction_cutoff = 8.0,
   .drive_feedback = &drive_pid,
   .turn_feedback = &turn_pid,
   .correction_pid = drive_correction_pid,

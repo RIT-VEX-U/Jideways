@@ -26,10 +26,19 @@ const vex::controller::button &climb_wing_button = con.ButtonUp;
 
 const double fold_out_time = 0.25;
 void opcontrol() {
-  autonomous();
+  // autonomous();
+  odom.set_position({.x = 40, .y = 12, .rot = 90});
   while (imu.isCalibrating()) {
     vexDelay(1);
   }
+  con.ButtonA.pressed([]() {
+    do_drive = false;
+    CommandController cc{
+      drive_sys.DriveForwardCmd(24, vex::reverse, 0.5),
+    };
+    cc.run();
+    do_drive = true;
+  });
   vex::timer drop_timer;
   outtake();
   brake_mode_button.pressed([]() {
@@ -46,7 +55,7 @@ void opcontrol() {
   right_wing_button.pressed([]() { right_wing.set(!right_wing); });
   both_wing_button.pressed([]() {
     right_wing.set(!right_wing);
-    right_wing.set(!right_wing);
+    left_wing.set(!left_wing);
   });
 
   // Intake
@@ -57,7 +66,7 @@ void opcontrol() {
   con.ButtonLeft.pressed([]() { screen::prev_page(); });
   con.ButtonRight.pressed([]() { screen::next_page(); });
 
-  both_wing_button.pressed([]() { climb_wing.set(!climb_wing); });
+  climb_wing_button.pressed([]() { climb_wing.set(!climb_wing); });
   drive_mode_button.pressed([]() { tank = !tank; });
 
   // ================ PERIODIC ================
