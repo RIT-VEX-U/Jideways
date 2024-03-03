@@ -10,8 +10,9 @@
  * @param is_async If true, position will be updated in the background continuously. If false, the programmer will have
  * to manually call update().
  */
-OdometryTank::OdometryTank(vex::motor_group &left_side, vex::motor_group &right_side, robot_specs_t &config,
-                           vex::inertial *imu, bool is_async)
+OdometryTank::OdometryTank(
+  vex::motor_group &left_side, vex::motor_group &right_side, robot_specs_t &config, vex::inertial *imu, bool is_async
+)
     : OdometryBase(is_async), left_side(&left_side), right_side(&right_side), left_custom_enc(NULL),
       right_custom_enc(NULL), left_vex_enc(NULL), right_vex_enc(NULL), imu(imu), config(config) {}
 
@@ -25,8 +26,10 @@ OdometryTank::OdometryTank(vex::motor_group &left_side, vex::motor_group &right_
  * @param is_async If true, position will be updated in the background continuously. If false, the programmer will have
  * to manually call update().
  */
-OdometryTank::OdometryTank(CustomEncoder &left_custom_enc, CustomEncoder &right_custom_enc, robot_specs_t &config,
-                           vex::inertial *imu, bool is_async)
+OdometryTank::OdometryTank(
+  CustomEncoder &left_custom_enc, CustomEncoder &right_custom_enc, robot_specs_t &config, vex::inertial *imu,
+  bool is_async
+)
     : OdometryBase(is_async), left_side(NULL), right_side(NULL), left_custom_enc(&left_custom_enc),
       right_custom_enc(&right_custom_enc), left_vex_enc(NULL), right_vex_enc(NULL), imu(imu), config(config) {}
 
@@ -40,8 +43,9 @@ OdometryTank::OdometryTank(CustomEncoder &left_custom_enc, CustomEncoder &right_
  * @param is_async If true, position will be updated in the background continuously. If false, the programmer will have
  * to manually call update().
  */
-OdometryTank::OdometryTank(vex::encoder &left_vex_enc, vex::encoder &right_vex_enc, robot_specs_t &config,
-                           vex::inertial *imu, bool is_async)
+OdometryTank::OdometryTank(
+  vex::encoder &left_vex_enc, vex::encoder &right_vex_enc, robot_specs_t &config, vex::inertial *imu, bool is_async
+)
     : OdometryBase(is_async), left_side(NULL), right_side(NULL), left_custom_enc(NULL), right_custom_enc(NULL),
       left_vex_enc(&left_vex_enc), right_vex_enc(&right_vex_enc), imu(imu), config(config) {}
 
@@ -77,6 +81,9 @@ pose_t OdometryTank::update() {
 
   double angle = 0;
 
+  if (imu != nullptr && !imu->installed()) {
+    printf("IMU Unpluggef\n");
+  }
   // If the IMU data was passed in, use it for rotational data
   if (imu == NULL || imu->installed() == false) {
     // Get the difference in distance driven between the two sides
@@ -140,8 +147,9 @@ pose_t OdometryTank::update() {
  * Using information about the robot's mechanical structure and sensors, calculate a new position
  * of the robot, relative to when this method was previously ran.
  */
-pose_t OdometryTank::calculate_new_pos(robot_specs_t &config, pose_t &curr_pos, double lside_revs, double rside_revs,
-                                       double angle_deg) {
+pose_t OdometryTank::calculate_new_pos(
+  robot_specs_t &config, pose_t &curr_pos, double lside_revs, double rside_revs, double angle_deg
+) {
   pose_t new_pos;
 
   static double stored_lside_revs = lside_revs;

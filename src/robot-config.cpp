@@ -12,6 +12,7 @@ vex::inertial imu(vex::PORT13, vex::turnType::right);
 
 vex::digital_out left_wing(Brain.ThreeWirePort.A);
 vex::digital_out right_wing(Brain.ThreeWirePort.B);
+vex::digital_out climb_wing(Brain.ThreeWirePort.C);
 
 // Analog sensors
 
@@ -62,25 +63,23 @@ PID::pid_config_t drive_pid_cfg = {
   .i = 0,
   .d = 0.018,
   .deadband = 0.5,
-  .on_target_time = 0.5,
+  .on_target_time = 0.25,
 };
 PID drive_pid{drive_pid_cfg};
 
 PID::pid_config_t drive_correction_pid = {
-  .p = 0.0,
+  .p = 0.005,
   .i = 0,
   .d = 0,
-  .deadband = 1.0,
-
+  .deadband = 0.1,
 };
 
 PID::pid_config_t turn_pid_cfg = {
-  .p = 0,
+  .p = 0.0365,
   .i = 0,
-  .d = 0,
-  .deadband = 0.0,
-  .on_target_time = 0.5,
-  .error_method = PID::ERROR_TYPE::ANGULAR,
+  .d = 0.0015,
+  .deadband = 1.0,
+  .on_target_time = 0.25,
 };
 
 PID turn_pid{turn_pid_cfg};
@@ -120,7 +119,7 @@ void robot_init() {
   screen::start_screen(
     Brain.Screen,
     {new VideoPlayer(), new screen::StatsPage(motor_names), new screen::OdometryPage(odom, 15.0, 15.0, true),
-     new screen::PIDPage(turn_pid, "turn_pid")},
+     new screen::PIDPage(drive_pid, "difr")},
     2
   );
 }

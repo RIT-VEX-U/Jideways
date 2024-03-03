@@ -1,4 +1,5 @@
 #include "competition/opcontrol.h"
+#include "competition/autonomous.h"
 #include "robot-config.h"
 #include "vex.h"
 #include <atomic>
@@ -14,49 +15,50 @@ const vex::controller::button &drive_mode_button = con.ButtonX;
 
 const vex::controller::button &left_wing_button = con.ButtonDown;
 const vex::controller::button &right_wing_button = con.ButtonB;
+
+const vex::controller::button &both_wing_button = con.ButtonL1;
+const vex::controller::button &brake_mode_button = con.ButtonL2;
+
+const vex::controller::button &climb_wing_button = con.ButtonUp;
 /**
  * Main entrypoint for the driver control period
  */
 
 const double fold_out_time = 0.25;
 void opcontrol() {
+  autonomous();
   while (imu.isCalibrating()) {
     vexDelay(1);
   }
   vex::timer drop_timer;
   outtake();
-  con.ButtonY.pressed([]() {
+  brake_mode_button.pressed([]() {
     if (brake_type == TankDrive::BrakeType::None) {
       brake_type = TankDrive::BrakeType::Smart;
     } else {
       brake_type = TankDrive::BrakeType::None;
     }
   });
-  con.ButtonUp.pressed([]() { odom.set_position({0, 0, 90}); });
-  con.ButtonA.pressed([]() {
-    do_drive = false;
-    CommandController cc{
-      drive_sys.TurnDegreesCmd(-90),
-    };
-    // left_motors.stop(vex::brakeType::hold);
-    // right_motors.stop(vex::brakeType::hold);
-    cc.run();
-    do_drive = true;
-  });
 
   // ================ INIT ================
   // Wings
   left_wing_button.pressed([]() { left_wing.set(!left_wing); });
   right_wing_button.pressed([]() { right_wing.set(!right_wing); });
+  both_wing_button.pressed([]() {
+    right_wing.set(!right_wing);
+    right_wing.set(!right_wing);
+  });
 
   // Intake
   intake_button.pressed([]() { intake(intake_volts); });
   outtake_button.pressed([]() { outtake(intake_volts); });
 
   // Misc
-  drive_mode_button.pressed([]() { tank = !tank; });
   con.ButtonLeft.pressed([]() { screen::prev_page(); });
   con.ButtonRight.pressed([]() { screen::next_page(); });
+
+  both_wing_button.pressed([]() { climb_wing.set(!climb_wing); });
+  drive_mode_button.pressed([]() { tank = !tank; });
 
   // ================ PERIODIC ================
   while (true) {

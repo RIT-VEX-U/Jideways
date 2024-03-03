@@ -10,6 +10,7 @@ extern vex::inertial imu;
 // Digital sensors
 extern vex::digital_out left_wing;
 extern vex::digital_out right_wing;
+extern vex::digital_out climb_wing;
 // Analog sensors
 
 // ================ OUTPUTS ================
