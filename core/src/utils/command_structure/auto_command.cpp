@@ -39,16 +39,18 @@ bool IfTimePassed::test() { return tmr.value() > time_s; }
 InOrder::InOrder(std::queue<AutoCommand *> cmds) : cmds(cmds) {
   timeout_seconds = -1.0; // never timeout unless with_timeout is explicitly called
 }
-InOrder::InOrder(std::initializer_list<AutoCommand *> cmds) : cmds(cmds) { timeout_seconds = -1.0; }
+InOrder::InOrder(std::initializer_list<AutoCommand *> cmds) : cmds(cmds), base_list(cmds) { timeout_seconds = -1.0; }
 
 bool InOrder::run() {
   // outer loop finished
   if (cmds.size() == 0 && current_command == nullptr) {
+    cmds = std::queue<AutoCommand *>{base_list};
+    current_command = nullptr;
     return true;
   }
   // retrieve and remove command at the front of the queue
   if (current_command == nullptr) {
-    printf("TAKING INORDER: len =  %d\n", cmds.size());
+    printf("TAKING INORDER: len =  %lu\n", cmds.size());
     current_command = cmds.front();
     cmds.pop();
     tmr.reset();
@@ -84,6 +86,9 @@ void InOrder::on_timeout() {
   if (current_command != nullptr) {
     current_command->on_timeout();
   }
+  // reset
+  current_command = nullptr;
+  cmds = std::queue<AutoCommand *>{base_list};
 }
 
 struct parallel_runner_info {
@@ -126,9 +131,9 @@ bool Parallel::run() {
     // not initialized yet
     for (int i = 0; i < cmds.size(); i++) {
       parallel_runner_info *ri = new parallel_runner_info{
-          .index = i,
-          .runners = &runners,
-          .cmd = cmds[i],
+        .index = i,
+        .runners = &runners,
+        .cmd = cmds[i],
       };
       runners.push_back(new vex::task(parallel_runner, ri));
     }

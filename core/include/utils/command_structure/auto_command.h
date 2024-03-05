@@ -105,7 +105,8 @@ private:
 class FunctionCondition : public Condition {
 public:
   FunctionCondition(
-      std::function<bool()> cond, std::function<void(void)> timeout = []() {})
+    std::function<bool()> cond, std::function<void(void)> timeout = []() {}
+  )
       : cond(cond), timeout(timeout) {}
   bool test() override;
 
@@ -152,6 +153,7 @@ public:
 private:
   AutoCommand *current_command = nullptr;
   std::queue<AutoCommand *> cmds;
+  const std::queue<AutoCommand *> base_list;
   vex::timer tmr;
 };
 

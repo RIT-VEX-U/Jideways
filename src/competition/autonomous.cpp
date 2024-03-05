@@ -106,7 +106,7 @@ void just_auto() {
         new DelayCommand(300),
         toggle_wing(),
         new DelayCommand(800),
-    }, new IfTimePassed(35)),
+    }, (new IfTimePassed(35))->Or(new TimesTestedCondition(10))),
     
     // outtake_cmd(),
     new DebugCommand(),
