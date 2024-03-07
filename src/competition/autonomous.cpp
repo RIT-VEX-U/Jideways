@@ -117,12 +117,12 @@ void just_auto() {
 
     // pushing
     outtake_cmd(),
-    drive_sys.DriveToPointCmd({37, 8.0},vex::fwd,0.5),
-    drive_sys.TurnToHeadingCmd(0, 0.5),
+    drive_sys.DriveToPointCmd({37, 6.0},vex::fwd,0.5),
+    drive_sys.TurnToHeadingCmd(-20, 0.5),
 
   // stop things circa half court
     new Async(new FunctionCommand([](){
-      if (odom.get_position().x > 74){
+      if (odom.get_position().x > 72){
         left_wing.set(true);
         outtake(0);
         return true;
@@ -131,28 +131,35 @@ void just_auto() {
     })),
 
     // across half court
-    drive_sys.DriveToPointCmd({108, 7},vex::fwd, 0.5),
+    drive_sys.DriveToPointCmd({108, 5},vex::fwd, 0.75)->withTimeout(0.5),
+    drive_sys.DriveToPointCmd({108, 11},vex::fwd, 0.75),
     drive_sys.TurnToHeadingCmd(29, 0.5),
-    drive_sys.TurnToPointCmd(123.5,13.52,vex::fwd, 0.5),
-    drive_sys.DriveToPointCmd({123.5, 13.52},vex::fwd, 0.5),
-    // drive_sys.TurnToHeadingCmd(90, 0.5),
+    drive_sys.DriveForwardCmd(-2, vex::fwd),
+    drive_sys.TurnToPointCmd(123.5,11.52,vex::fwd, 0.5),
+    drive_sys.DriveToPointCmd({123.5, 11.52},vex::fwd, 0.5),
 
     toggle_wing_l(),
-    // drive_sys.TurnToHeadingCmd(-120, 0.5),
-    drive_sys.TurnDegreesCmd(-180)->withTimeout(0.35),
+    drive_sys.TurnDegreesCmd(-180)->withTimeout(0.35), // start spinning the right way
     drive_sys.TurnToPointCmd(128.5,36.2, vex::reverse, 0.5),
     drive_sys.DriveForwardCmd(20, vex::reverse, 1.0)->withTimeout(1.0),
     drive_sys.DriveForwardCmd(20, vex::fwd, 1.0)->withTimeout(1.0),
-    drive_sys.TurnDegreesCmd(-30),
+    drive_sys.TurnToHeadingCmd(237, 0.65),
     drive_sys.DriveForwardCmd(24, vex::reverse, 1.0)->withTimeout(1.0),
-    drive_sys.DriveForwardCmd(24, vex::fwd, 1.0)->withTimeout(1.0),
-    drive_sys.DriveForwardCmd(28, vex::reverse, 1.0)->withTimeout(1.0),
-    drive_sys.DriveForwardCmd(28, vex::fwd, 1.0)->withTimeout(1.0),
+    drive_sys.DriveForwardCmd(16, vex::fwd, 1.0)->withTimeout(1.0),
+    drive_sys.DriveForwardCmd(18, vex::reverse, 1.0)->withTimeout(1.0),
+    drive_sys.DriveForwardCmd(26, vex::fwd, 1.0)->withTimeout(1.0),
 
     drive_sys.TurnToHeadingCmd(90, 0.5),
-    drive_sys.DriveTankCmd(-0.1,-0.1)->withTimeout(3.0),
+    drive_sys.DriveTankCmd(-0.5,-0.5)->withTimeout(1.5),
+    drive_sys.DriveForwardCmd(2.0,vex::fwd, 0.5),
 
-
+    drive_sys.TurnToHeadingCmd(180, 0.5),
+    drive_sys.DriveForwardCmd(32.0,vex::fwd, 0.5),
+    drive_sys.TurnToHeadingCmd(90, 0.5),
+    intake_cmd(12.0),
+    drive_sys.DriveForwardCmd(8.0, vex::fwd, 0.25)->withTimeout(4.0),
+    new DelayCommand(500),
+    intake_cmd(0),
     // new DebugCommand(),
   };
     cc.run();
