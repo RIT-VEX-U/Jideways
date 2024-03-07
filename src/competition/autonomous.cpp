@@ -43,12 +43,20 @@ public:
     return false;
   }
 };
-AutoCommand *toggle_wing() {
+AutoCommand *toggle_wing_r() {
   return new FunctionCommand([]() {
     right_wing.set(!right_wing);
     return true;
   });
 }
+
+AutoCommand *toggle_wing_l() {
+  return new FunctionCommand([]() {
+    left_wing.set(!left_wing);
+    return true;
+  });
+}
+
 AutoCommand *stop_intake() {
   return new FunctionCommand([]() {
     intake(0);
@@ -59,57 +67,93 @@ void just_auto() {
   // clang-format off
   CommandController cc{
     odom.SetPositionCmd({.x = 40, .y = 7, .rot = 90}),     
-    drive_sys.DriveToPointCmd({40, 35}, vex::fwd, 0.5),
-    drive_sys.TurnToPointCmd(59.5, 51.7, vex::fwd, 0.5),
-    // pick up first
-    intake_cmd(),
-    drive_sys.DriveToPointCmd({58.5, 51.7}, vex::fwd, 0.5), 
-    drive_sys.DriveToPointCmd({38.5, 35.5}, vex::reverse, 0.5),
-    stop_intake(),
-    drive_sys.TurnToPointCmd(37.9, 19.5, vex::fwd, 0.5),
-    drive_sys.DriveToPointCmd({37.9, 19.5}, vex::fwd, 0.5), 
+    drive_sys.DriveToPointCmd({40, 35}, vex::fwd, 0.75),
+    // // pick up first
+    // drive_sys.TurnToPointCmd(59.5, 51.7, vex::fwd, 0.75),
+    // intake_cmd(),
+    // drive_sys.DriveToPointCmd({58.5, 51.7}, vex::fwd, 0.5), 
+    // drive_sys.DriveToPointCmd({38.5, 35.5}, vex::reverse, 0.75),
+    // stop_intake(),
+    // drive_sys.TurnToPointCmd(37.9, 19.5, vex::fwd, 0.65),
+    // drive_sys.DriveToPointCmd({37.9, 19.5}, vex::fwd, 0.75), 
 
-    // Drop First
-    drive_sys.TurnToHeadingCmd(340, 0.5),
-    outtake_cmd(),
-    new DelayCommand(600),
-    stop_intake(),
-    drive_sys.TurnToHeadingCmd(-90, 0.5),
-    drive_sys.DriveToPointCmd({39.7, 34.5}, vex::reverse, 0.5),
+    // // Drop First
+    // drive_sys.TurnToHeadingCmd(340, 0.5),
+    // outtake_cmd(),
+    // new DelayCommand(600),
+    // stop_intake(),
+    // drive_sys.TurnToHeadingCmd(-90, 0.5),
+    // drive_sys.DriveToPointCmd({39.7, 34.5}, vex::reverse, 0.5),
 
     // pick up second
-    drive_sys.TurnToPointCmd(47.2, 54.7, vex::fwd, 0.5),
+    drive_sys.TurnToPointCmd(47.2, 54.7, vex::fwd, 0.65),
     intake_cmd(12.0),
     drive_sys.DriveToPointCmd({47.63, 54.5}, vex::fwd, 0.5), 
-    drive_sys.DriveToPointCmd({37.7, 34.5}, vex::reverse, 0.5),
+    drive_sys.DriveToPointCmd({37.7, 34.5}, vex::reverse, 0.75),
     stop_intake(),
-    drive_sys.TurnToPointCmd(37.5, 20.0, vex::fwd, 0.5),
-    drive_sys.DriveToPointCmd({37.5, 20.0}, vex::fwd, 0.5),
+    drive_sys.TurnToPointCmd(37.5, 20.0, vex::fwd, 0.65),
+    drive_sys.DriveToPointCmd({37.5, 20.0}, vex::fwd, 0.75),
 
     // Drop Second
-    drive_sys.TurnToHeadingCmd(340, 0.5),
+    drive_sys.TurnToHeadingCmd(340, 0.65),
     outtake_cmd(),
     new DelayCommand(600),
     stop_intake(),
 
-    // new DebugCommand(),
 
     // get close to wall
-    drive_sys.TurnToHeadingCmd(240, 0.5),
+    drive_sys.TurnToHeadingCmd(240, 0.65),
     drive_sys.DriveToPointCmd({33.5,12.5}, vex::fwd,0.25),
 
     // turn and back up to bar
-    drive_sys.TurnToPointCmd(22.0,16.0, vex::reverse,0.5),
+    drive_sys.TurnToPointCmd(22.0,16.0, vex::reverse,0.65),
     drive_sys.DriveToPointCmd({22,16.0},vex::reverse,0.15),
     new RepeatUntil({
-        toggle_wing(),
-        new DelayCommand(300),
-        toggle_wing(),
+        toggle_wing_r(), // out
+        new DelayCommand(400),
+        toggle_wing_r(), // in
         new DelayCommand(800),
     }, (new IfTimePassed(35))->Or(new TimesTestedCondition(10))),
-    
-    // outtake_cmd(),
-    new DebugCommand(),
+
+    // pushing
+    outtake_cmd(),
+    drive_sys.DriveToPointCmd({37, 8.0},vex::fwd,0.5),
+    drive_sys.TurnToHeadingCmd(0, 0.5),
+
+  // stop things circa half court
+    new Async(new FunctionCommand([](){
+      if (odom.get_position().x > 74){
+        left_wing.set(true);
+        outtake(0);
+        return true;
+      }
+      return false;
+    })),
+
+    // across half court
+    drive_sys.DriveToPointCmd({108, 7},vex::fwd, 0.5),
+    drive_sys.TurnToHeadingCmd(29, 0.5),
+    drive_sys.TurnToPointCmd(123.5,13.52,vex::fwd, 0.5),
+    drive_sys.DriveToPointCmd({123.5, 13.52},vex::fwd, 0.5),
+    // drive_sys.TurnToHeadingCmd(90, 0.5),
+
+    toggle_wing_l(),
+    // drive_sys.TurnToHeadingCmd(-120, 0.5),
+    drive_sys.TurnDegreesCmd(-180)->withTimeout(0.35),
+    drive_sys.TurnToPointCmd(128.5,36.2, vex::reverse, 0.5),
+    drive_sys.DriveForwardCmd(20, vex::reverse, 1.0)->withTimeout(1.0),
+    drive_sys.DriveForwardCmd(20, vex::fwd, 1.0)->withTimeout(1.0),
+    drive_sys.TurnDegreesCmd(-30),
+    drive_sys.DriveForwardCmd(24, vex::reverse, 1.0)->withTimeout(1.0),
+    drive_sys.DriveForwardCmd(24, vex::fwd, 1.0)->withTimeout(1.0),
+    drive_sys.DriveForwardCmd(28, vex::reverse, 1.0)->withTimeout(1.0),
+    drive_sys.DriveForwardCmd(28, vex::fwd, 1.0)->withTimeout(1.0),
+
+    drive_sys.TurnToHeadingCmd(90, 0.5),
+    drive_sys.DriveTankCmd(-0.1,-0.1)->withTimeout(3.0),
+
+
+    // new DebugCommand(),
   };
     cc.run();
   // clang-format on

@@ -26,8 +26,8 @@ const vex::controller::button &climb_wing_button = con.ButtonUp;
 
 const double fold_out_time = 0.25;
 void opcontrol() {
-  // autonomous();
-  odom.set_position({.x = 40, .y = 12, .rot = 90});
+  autonomous();
+  // odom.set_position({.x = 40, .y = 12, .rot = 90});
   while (imu.isCalibrating()) {
     vexDelay(1);
   }
@@ -40,7 +40,6 @@ void opcontrol() {
     do_drive = true;
   });
   vex::timer drop_timer;
-  outtake();
   brake_mode_button.pressed([]() {
     if (brake_type == TankDrive::BrakeType::None) {
       brake_type = TankDrive::BrakeType::Smart;
