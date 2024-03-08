@@ -8,7 +8,7 @@ void autonomous() {
   while (imu.isCalibrating()) {
     vexDelay(1);
   }
-  just_auto();
+  jideways_skills();
 }
 AutoCommand *intake_cmd(double amt = 8.0) {
   return new FunctionCommand([=]() {
@@ -75,14 +75,19 @@ void jideways_skills() {
         new DelayCommand(400),
         toggle_wing_r(), // in
         new DelayCommand(800),
-    }, (new IfTimePassed(35))->Or(new TimesTestedCondition(22))),
+    }, (new IfTimePassed(35))->Or(new TimesTestedCondition(2))),
         // pushing
     outtake_cmd(),
-    drive_sys.DriveToPointCmd({37, 6.0},vex::fwd,0.5),
-    drive_sys.TurnToHeadingCmd(-20, 0.5),
+    drive_sys.DriveToPointCmd({37, 6.0},vex::fwd,0.5)->withTimeout(2.0),
+    drive_sys.TurnToHeadingCmd(0, 0.5)->withTimeout(2.0),
+    toggle_wing_l(),
 
   // stop things circa half court
     new Async(new FunctionCommand([](){
+      if (odom.get_position().x > 46){
+        left_wing.set(false);
+        return false;
+      }
       if (odom.get_position().x > 69){
         left_wing.set(true);
         outtake(0);
@@ -92,18 +97,20 @@ void jideways_skills() {
     })),
 
     // across half court
-    drive_sys.DriveToPointCmd({108, 7},vex::fwd, 0.75),
-    // drive_sys.TurnToHeadingCmd(29, 0.5),
-    // drive_sys.DriveForwardCmd(-2, vex::fwd),
+    drive_sys.DriveToPointCmd({96, 7},vex::fwd, 0.75),
+
+    toggle_wing_l(),
+
     drive_sys.TurnToPointCmd(122.5,16.52,vex::fwd, 0.5),
     drive_sys.DriveToPointCmd({122.5, 16.52},vex::fwd, 0.5),
 
-    toggle_wing_l(),
     drive_sys.TurnDegreesCmd(-180)->withTimeout(0.35), // start spinning the right way
 
     drive_sys.TurnToPointCmd(132.5,36.2, vex::reverse, 0.5),
     drive_sys.DriveForwardCmd(20, vex::reverse, 1.0)->withTimeout(1.0),
     drive_sys.DriveForwardCmd(20, vex::fwd, 1.0)->withTimeout(1.0),
+
+
 
     drive_sys.TurnToHeadingCmd(247, 0.65),
     drive_sys.DriveForwardCmd(28, vex::reverse, 1.0)->withTimeout(1.0),

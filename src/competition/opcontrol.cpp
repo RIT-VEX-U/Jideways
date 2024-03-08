@@ -26,7 +26,7 @@ const vex::controller::button &climb_wing_button = con.ButtonUp;
 
 const double fold_out_time = 0.25;
 void opcontrol() {
-
+  autonomous();
   // odom.set_position({.x = 40, .y = 12, .rot = 90});
   while (imu.isCalibrating()) {
     vexDelay(1);
