@@ -24,22 +24,12 @@ const vex::controller::button &climb_wing_button = con.ButtonUp;
  * Main entrypoint for the driver control period
  */
 
-const double fold_out_time = 0.25;
 void opcontrol() {
-  autonomous();
-  // odom.set_position({.x = 40, .y = 12, .rot = 90});
+
   while (imu.isCalibrating()) {
     vexDelay(1);
   }
-  con.ButtonA.pressed([]() {
-    do_drive = false;
-    CommandController cc{
-      drive_sys.DriveForwardCmd(24, vex::reverse, 0.5),
-    };
-    cc.run();
-    do_drive = true;
-  });
-  vex::timer drop_timer;
+
   brake_mode_button.pressed([]() {
     if (brake_type == TankDrive::BrakeType::None) {
       brake_type = TankDrive::BrakeType::Smart;
@@ -71,15 +61,15 @@ void opcontrol() {
   // ================ PERIODIC ================
   while (true) {
     // intake motors
-    if (!intake_button.pressing() && !outtake_button.pressing() && drop_timer.value() > fold_out_time) {
+    if (!intake_button.pressing() && !outtake_button.pressing()) {
       intake_motors.stop(vex::brakeType::hold);
     }
 
     // drive
     if (do_drive) {
       if (tank) {
-        double left = (double)con.Axis4.position() / 100.0;
-        double right = (double)con.Axis3.position() / 100.0;
+        double left = (double)con.Axis3.position() / 100.0;
+        double right = (double)con.Axis2.position() / 100.0;
         drive_sys.drive_tank(left, right, 1, brake_type);
       } else {
         double forward = (double)con.Axis3.position() / 100.0;

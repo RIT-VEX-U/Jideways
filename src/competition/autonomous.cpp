@@ -8,6 +8,7 @@ void autonomous() {
   while (imu.isCalibrating()) {
     vexDelay(1);
   }
+  // just_auto();
   jideways_skills();
 }
 AutoCommand *intake_cmd(double amt = 8.0) {
@@ -110,7 +111,7 @@ void jideways_skills() {
     drive_sys.DriveForwardCmd(20, vex::reverse, 1.0)->withTimeout(1.0),
     drive_sys.DriveForwardCmd(20, vex::fwd, 1.0)->withTimeout(1.0),
 
-
+ 
 
     drive_sys.TurnToHeadingCmd(247, 0.65),
     drive_sys.DriveForwardCmd(28, vex::reverse, 1.0)->withTimeout(1.0),
