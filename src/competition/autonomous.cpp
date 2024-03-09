@@ -8,8 +8,8 @@ void autonomous() {
   while (imu.isCalibrating()) {
     vexDelay(1);
   }
-  // just_auto();
-  jideways_skills();
+  just_auto();
+  // jideways_skills();
 }
 AutoCommand *intake_cmd(double amt = 8.0) {
   return new FunctionCommand([=]() {
