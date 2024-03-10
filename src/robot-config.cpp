@@ -115,11 +115,11 @@ void outtake() { intake_motors.spin(vex::reverse, intake_volts, vex::volt); };
  */
 void robot_init() {
   imu.startCalibration();
-  set_video("cj2.mpeg");
+  set_video("subway.mpeg");
   screen::start_screen(
     Brain.Screen,
     {new VideoPlayer(), new screen::StatsPage(motor_names), new screen::OdometryPage(odom, 15.0, 15.0, true),
      new screen::PIDPage(drive_pid, "difr")},
-    2
+    0
   );
 }

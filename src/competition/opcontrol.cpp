@@ -19,13 +19,13 @@ const vex::controller::button &right_wing_button = con.ButtonB;
 const vex::controller::button &both_wing_button = con.ButtonL1;
 const vex::controller::button &brake_mode_button = con.ButtonL2;
 
-const vex::controller::button &climb_wing_button = con.ButtonUp;
+const vex::controller::button &climb_wing_button = con.ButtonRight;
 /**
  * Main entrypoint for the driver control period
  */
 
 void opcontrol() {
-
+  autonomous();
   while (imu.isCalibrating()) {
     vexDelay(1);
   }
@@ -53,7 +53,7 @@ void opcontrol() {
 
   // Misc
   con.ButtonLeft.pressed([]() { screen::prev_page(); });
-  con.ButtonRight.pressed([]() { screen::next_page(); });
+  con.ButtonUp.pressed([]() { screen::next_page(); });
 
   climb_wing_button.pressed([]() { climb_wing.set(!climb_wing); });
   drive_mode_button.pressed([]() { tank = !tank; });
