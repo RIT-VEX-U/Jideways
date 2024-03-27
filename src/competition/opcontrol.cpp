@@ -25,7 +25,7 @@ const vex::controller::button &climb_wing_button = con.ButtonRight;
  */
 
 void opcontrol() {
-  autonomous();
+  // autonomous();
   while (imu.isCalibrating()) {
     vexDelay(1);
   }

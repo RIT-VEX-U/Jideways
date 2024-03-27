@@ -8,7 +8,7 @@ vex::controller con;
 
 // ================ INPUTS ================
 // Digital sensors
-vex::inertial imu(vex::PORT13, vex::turnType::right);
+vex::inertial imu(vex::PORT5, vex::turnType::right);
 
 vex::digital_out left_wing(Brain.ThreeWirePort.A);
 vex::digital_out right_wing(Brain.ThreeWirePort.B);
